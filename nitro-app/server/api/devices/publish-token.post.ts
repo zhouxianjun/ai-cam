@@ -1,5 +1,5 @@
 import { defineHandler } from 'nitro'
-import { createError } from 'nitro/h3'
+import { HTTPError } from 'nitro/h3'
 import crypto from 'node:crypto'
 import { getDevice } from '../../utils/db.ts'
 import { signMediaToken } from '../../utils/token.ts'
@@ -13,7 +13,7 @@ interface PublishTokenPayload {
 
 function validatePublishTokenPayload(body: unknown): PublishTokenPayload {
   if (!body || typeof body !== 'object') {
-    throw createError({ statusCode: 400, message: 'Invalid request body' })
+    throw new HTTPError({ status: 400, message: 'Invalid request body' })
   }
 
   const payload = body as Record<string, unknown>
@@ -32,7 +32,7 @@ function validatePublishTokenPayload(body: unknown): PublishTokenPayload {
     !app.trim() ||
     !stream.trim()
   ) {
-    throw createError({ statusCode: 400, message: 'Missing parameters' })
+    throw new HTTPError({ status: 400, message: 'Missing parameters' })
   }
 
   return {
@@ -49,7 +49,7 @@ export default defineHandler(async (event) => {
 
   const device = await getDevice(deviceId)
   if (!device || device.secret !== secret) {
-    throw createError({ statusCode: 403, message: 'Device authorization failed' })
+    throw new HTTPError({ status: 403, message: 'Device authorization failed' })
   }
 
   const token = signMediaToken(

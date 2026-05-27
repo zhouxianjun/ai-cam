@@ -22,6 +22,16 @@ vi.mock('nitro/storage', () => {
   }
 })
 
+vi.mock('nitro/h3', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>()
+  return {
+    ...actual,
+    getRequestIP: (event: any) => {
+      return event.node?.req?.socket?.remoteAddress || ''
+    },
+  }
+})
+
 interface CallbackResult {
   code: number
   error?: string

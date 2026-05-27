@@ -1,5 +1,5 @@
 import { defineHandler } from 'nitro'
-import { createError } from 'nitro/h3'
+import { HTTPError } from 'nitro/h3'
 import { getDevice, saveDevice } from '../../utils/db.ts'
 import type { Device } from '~/shared/types.ts'
 
@@ -11,7 +11,7 @@ interface RegisterPayload {
 
 function validateRegisterPayload(body: unknown): RegisterPayload {
   if (!body || typeof body !== 'object') {
-    throw createError({ statusCode: 400, message: 'Invalid request body' })
+    throw new HTTPError({ status: 400, message: 'Invalid request body' })
   }
 
   const payload = body as Record<string, unknown>
@@ -25,7 +25,7 @@ function validateRegisterPayload(body: unknown): RegisterPayload {
     !deviceId.trim() ||
     !secret.trim()
   ) {
-    throw createError({ statusCode: 400, message: 'DeviceId and secret are required' })
+    throw new HTTPError({ status: 400, message: 'DeviceId and secret are required' })
   }
 
   return {
@@ -44,7 +44,7 @@ export default defineHandler(async (event) => {
 
   if (existingDevice) {
     if (existingDevice.secret !== secret) {
-      throw createError({ statusCode: 403, message: 'Invalid device secret' })
+      throw new HTTPError({ status: 403, message: 'Invalid device secret' })
     }
     device = {
       ...existingDevice,

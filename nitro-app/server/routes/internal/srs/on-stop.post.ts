@@ -1,4 +1,5 @@
 import { defineHandler } from 'nitro'
+import { getRequestIP } from 'nitro/h3'
 import { getDevice, saveDevice } from '../../../utils/db.ts'
 
 interface SrsStopBody {
@@ -49,7 +50,7 @@ async function handleStop(remoteIp: string, body: unknown) {
 }
 
 export default defineHandler(async (event) => {
-  const remoteIp = event.node?.req?.socket?.remoteAddress || ''
+  const remoteIp = getRequestIP(event) || ''
   try {
     const body = await event.req.json()
     return await handleStop(remoteIp, body)

@@ -1,4 +1,5 @@
 import { defineHandler } from 'nitro'
+import { getRequestIP } from 'nitro/h3'
 import { getDevice } from '../../../utils/db.ts'
 import { verifyMediaToken } from '../../../utils/token.ts'
 
@@ -85,7 +86,7 @@ async function validatePlay(remoteIp: string, body: unknown) {
 }
 
 export default defineHandler(async (event) => {
-  const remoteIp = event.node?.req?.socket?.remoteAddress || ''
+  const remoteIp = getRequestIP(event) || ''
   try {
     const body = await event.req.json()
     return await validatePlay(remoteIp, body)
