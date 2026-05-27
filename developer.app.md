@@ -26,23 +26,24 @@ vue-router    → 文件路由由 vue-router/vite 插件自动生成，见 typed
 ## 目录职责
 
 ```
-shared/               → 前后端共享：类型、常量、纯函数。禁止导入任何端专属包
-app/
-  entry-client.ts     → 客户端入口：createApp / Pinia / Router 挂载
-  App.vue             → 根组件（仅放 <router-view> + 全局过渡）
-  pages/              → 文件路由页面（vue-router/vite 自动扫描）
-  components/         → 可复用 UI 组件
-  composables/        → 组合式函数（useXxx）
-  stores/             → Pinia store
-  assets/             → 静态资源（CSS / 图片 / 字体）
-  types/              → 仅前端的类型定义
+nitro-app/
+  ├── shared/         → 前后端共享：类型、常量、纯函数。禁止导入任何端专属包
+  └── app/
+        ├── entry-client.ts → 客户端入口：createApp / Pinia / Router 挂载
+        ├── App.vue   → 根组件（仅放 <router-view> + 全局过渡）
+        ├── pages/    → 文件路由页面（vue-router/vite 自动扫描）
+        ├── components/ → 可复用 UI 组件
+        ├── composables/ → 组合式函数（useXxx）
+        ├── stores/   → Pinia store
+        ├── assets/   → 静态资源（CSS / 图片 / 字体）
+        └── types/    → 仅前端的类型定义
 ```
 
-> 类型 / 常量 / 纯函数若前后端都用 → 放 `shared/`，不要在 `app/` 和 `server/` 里各写一份。
+> 类型 / 常量 / 纯函数若前后端都用 → 放 `nitro-app/shared/`，不要在 `app/` 和 `server/` 里各写一份。
 
 ## 文件路由
 
-页面文件放 `app/pages/`，路径即路由：
+页面文件放 `nitro-app/app/pages/`，路径即路由：
 
 ```
 pages/
@@ -53,7 +54,7 @@ pages/
     [id].vue          → /dashboard/:id
 ```
 
-**重要**：`pages/` 目录下所有非页面文件（组件、工具等）必须放在 `__xxx__` 目录中（双下划线包裹），否则会被自动路由系统识别为路由路径。
+**重要**：`nitro-app/app/pages/` 目录下所有非页面文件（组件、工具等）必须放在 `__xxx__` 目录中（双下划线包裹），否则会被自动路由系统识别为路由路径。
 
 路由类型自动生成到 `typed-router.d.ts`，使用 `<router-link>` 和 `useRouter()` 均有类型提示。
 
@@ -82,7 +83,7 @@ const emit = defineEmits<{
 
 ## 状态管理 (Pinia)
 
-- 一个业务域一个 store，文件放 `app/stores/`
+- 一个业务域一个 store，文件放 `nitro-app/app/stores/`
 - 使用 Setup Store 语法（`defineStore('name', () => { ... })`）
 - 与 API 交互的逻辑封装在 store 的 action 中，组件不直接调 fetch
 
@@ -91,7 +92,7 @@ const emit = defineEmits<{
 - **TailwindCSS** 作为主要样式方案，直接在模板中使用
 - **Element Plus** 主题定制通过 SCSS 变量覆盖（已配置 sass/sass-embedded）
 - **组件私有样式** 使用 `<style scoped>`，避免全局污染
-- **共享样式** 放 `app/assets/`
+- **共享样式** 放 `nitro-app/app/assets/`
 
 ## 代码质量
 
@@ -120,8 +121,8 @@ loading.value = false
 ```
 
 - **文件不要太大** — 单个 `.vue` / `.ts` 文件超过 ~200 行时，拆分为：
-  - 单一职责子组件（`components/`）
-  - 组合式函数（`composables/useXxx.ts`）
+  - 单一职责子组件（`nitro-app/app/components/`）
+  - 组合式函数（`nitro-app/app/composables/useXxx.ts`）
 
 ## 第三方文档查阅
 

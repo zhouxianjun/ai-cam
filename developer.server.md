@@ -7,13 +7,13 @@
 **Nitro v3 的 API 与你的已有知识大概率不同，动手前必读：**
 
 ```
-node_modules/nitro/dist/docs/README.md          ← 文档目录索引
-node_modules/nitro/dist/docs/0.docs/3.routing.md ← 路由 & 中间件
-node_modules/nitro/dist/docs/0.docs/14.websocket.md ← WebSocket & SSE
-node_modules/nitro/dist/docs/0.docs/12.plugins.md   ← 插件 & 生命周期 Hooks
-node_modules/nitro/dist/docs/0.docs/8.configuration.md ← runtimeConfig & 环境变量
-node_modules/nitro/dist/docs/0.docs/6.storage.md    ← KV Storage
-node_modules/nitro/dist/docs/0.docs/10.lifecycle.md  ← 请求生命周期
+nitro-app/node_modules/nitro/dist/docs/README.md          ← 文档目录索引
+nitro-app/node_modules/nitro/dist/docs/0.docs/3.routing.md ← 路由 & 中间件
+nitro-app/node_modules/nitro/dist/docs/0.docs/14.websocket.md ← WebSocket & SSE
+nitro-app/node_modules/nitro/dist/docs/0.docs/12.plugins.md   ← 插件 & 生命周期 Hooks
+nitro-app/node_modules/nitro/dist/docs/0.docs/8.configuration.md ← runtimeConfig & 环境变量
+nitro-app/node_modules/nitro/dist/docs/0.docs/6.storage.md    ← KV Storage
+nitro-app/node_modules/nitro/dist/docs/0.docs/10.lifecycle.md  ← 请求生命周期
 ```
 
 ## 项目约定
@@ -28,19 +28,20 @@ node_modules/nitro/dist/docs/0.docs/10.lifecycle.md  ← 请求生命周期
 ## 目录职责
 
 ```
-shared/           → 前后端共享：类型、常量、纯函数。禁止导入任何端专属包
-server/
-  api/            → /api 前缀路由。按业务用 (group)/ 分组，不影响 URL
-  routes/         → 无前缀路由（WebSocket 入口等）
-  middleware/     → 全局中间件，数字前缀排序：01.xxx.ts, 02.xxx.ts
-  plugins/        → 启动时执行一次，数字前缀排序
-  utils/          → 仅服务端的工具函数
-  types/          → 仅服务端的类型
-  constants/      → 仅服务端的常量
-app/              → 前端代码
+nitro-app/
+  ├── shared/     → 前后端共享：类型、常量、纯函数。禁止导入任何端专属包
+  ├── server/     → 服务端逻辑
+  │     ├── api/  → /api 前缀路由。按业务用 (group)/ 分组，不影响 URL
+  │     ├── routes/ → 无前缀路由（WebSocket 入口等）
+  │     ├── middleware/ → 全局中间件，数字前缀排序：01.xxx.ts, 02.xxx.ts
+  │     ├── plugins/    → 启动时执行一次，数字前缀排序
+  │     ├── utils/      → 仅服务端的工具函数
+  │     ├── types/      → 仅服务端的类型
+  │     └── constants/  → 仅服务端的常量
+  └── app/        → 前端代码
 ```
 
-> 类型 / 常量 / 纯函数若前后端都用 → 放 `shared/`，不要在 `server/` 和 `app/` 里各写一份。
+> 类型 / 常量 / 纯函数若前后端都用 → 放 `nitro-app/shared/`，不要在 `server/` 和 `app/` 里各写一份。
 
 ## 代码质量
 
@@ -88,4 +89,4 @@ const body = await event.req.json()
 const { id } = event.context.params
 ```
 
-> ⚠️ `readBody(event)` 等旧 API 已废弃，以 `node_modules/nitro/dist/docs/` 内文档为准。
+> ⚠️ `readBody(event)` 等旧 API 已废弃，以 `nitro-app/node_modules/nitro/dist/docs/` 内文档为准。
