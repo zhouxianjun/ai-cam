@@ -81,12 +81,15 @@ import { definePlugin } from 'nitro'
 import { useRuntimeConfig } from 'nitro/runtime-config'
 import { useStorage } from 'nitro/storage'
 
-// h3 工具
-import { createError, createEventStream } from 'nitro/h3'
+// h3 工具与安全
+import { HTTPError, getRequestIP, createEventStream } from 'nitro/h3'
 
 // 读请求体 / 路由参数
 const body = await event.req.json()
 const { id } = event.context.params
 ```
 
-> ⚠️ `readBody(event)` 等旧 API 已废弃，以 `nitro-app/node_modules/nitro/dist/docs/` 内文档为准。
+> ⚠️ **Nitro v3 重要弃用避坑指南**：
+> 1. `readBody(event)` 已废弃。改用 `await event.req.json()` 提取数据体。
+> 2. `createError` 已经废弃。请统一改用标准的 `throw new HTTPError({ status: 400, message: '...' })`。
+> 3. `event.node` / `event.node.req.socket.remoteAddress` 已经废弃。获取客户端 IP 严禁读取平台专有 socket，请统一改用原生跨平台的 `getRequestIP(event)`。此方法不仅能免去弃用警告，且天然完美兼容 Node、Deno、Bun 和多种 Serverless 平台。
