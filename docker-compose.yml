@@ -1,15 +1,35 @@
 version: "3.9"
 
 services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx_gateway
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    restart: always
+    depends_on:
+      - srs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - homeguard_net
+
   srs:
     image: ossrs/srs:6
     container_name: srs_media_server
-    ports:
-      - "1935:1935"
-      - "1985:1985"
-      - "8080:8080"
-      - "8000:8000"
     volumes:
       - ./srs.conf:/usr/local/srs/conf/srs.conf
+      - ./nginx/certs:/usr/local/srs/conf/certs:ro
     command: ["./objs/srs", "-c", "conf/srs.conf"]
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - homeguard_net
+
+networks:
+  homeguard_net:
+    driver: bridge
