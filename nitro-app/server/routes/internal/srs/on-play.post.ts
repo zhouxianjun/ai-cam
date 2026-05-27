@@ -22,8 +22,17 @@ class CallbackValidationError extends Error {
 
 // Early validator block to avoid flat conditional chains
 async function validatePlay(remoteIp: string, body: unknown) {
-  // 1. IP Validation (restricted to local IP loopback)
-  const isLocal = remoteIp === '127.0.0.1' || remoteIp === '::1' || remoteIp === '::ffff:127.0.0.1'
+  // 1. IP Validation (restricted to local IP loopback & Docker bridge in dev)
+  const isLocal =
+    remoteIp === '127.0.0.1' ||
+    remoteIp === '::1' ||
+    remoteIp === '::ffff:127.0.0.1' ||
+    remoteIp.startsWith('172.') ||
+    remoteIp.startsWith('10.') ||
+    remoteIp.startsWith('192.168.') ||
+    remoteIp.startsWith('::ffff:172.') ||
+    remoteIp.startsWith('::ffff:10.') ||
+    remoteIp.startsWith('::ffff:192.168.')
   if (!isLocal) {
     throw new CallbackValidationError(403, 'Forbidden')
   }
