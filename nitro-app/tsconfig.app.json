@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve"
+  },
+  "include": [
+    "app",
+    "./auto-imports.d.ts",
+    "./components.d.ts",
+    "./typed-router.d.ts",
+    "app/**/*.vue",
+    "app/**/*.tsx",
+    "app/**/*.ts"
+  ]
+}

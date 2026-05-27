@@ -1,0 +1,21 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[vue]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "stylelint.enable": true,
+  "stylelint.validate": ["css", "scss", "vue", "html"],
+  "cSpell.words": ["oxfmt", "oxlint"],
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  }
+}

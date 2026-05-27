@@ -1,0 +1,15 @@
+* text=auto eol=lf
+
+# Binary files - never normalize
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary
+*.xlsx binary
+*.xls binary
+*.db binary

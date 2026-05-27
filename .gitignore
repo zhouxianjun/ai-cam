@@ -1,0 +1,14 @@
+node_modules
+dist
+.data
+.nitro
+.cache
+.output
+.env
+.env.local
+*.tsbuildinfo
+.matching-baseline.json
+auto-imports.d.ts
+components.d.ts
+typed-router.d.ts
+.DS_Store
