@@ -13,7 +13,7 @@ export default definePlugin(async () => {
       passwordHash,
       salt,
       role: 'admin',
-      createdAt: Date.now()
+      createdAt: Date.now(),
     })
     console.log('[Seed] Default admin user created (admin / admin123)')
   }

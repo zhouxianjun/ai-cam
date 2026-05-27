@@ -10,7 +10,7 @@ import { VueRouterAutoImports } from 'vue-router/unplugin'
 
 export default defineConfig({
   plugins: [
-    nitro(),
+    !process.env.VITEST && nitro(),
     VueRouter({
       routesFolder: 'app/pages',
       exclude: '**/__*__/**',

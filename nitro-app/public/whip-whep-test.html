@@ -1,623 +1,721 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HomeGuard-RTC Phase 1 联调测试控制台</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-dark: #0b0f19;
-            --bg-card: rgba(22, 28, 45, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --success: #10b981;
-            --error: #ef4444;
-        }
+      :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-dark: #0b0f19;
+        --bg-card: rgba(22, 28, 45, 0.7);
+        --border-color: rgba(255, 255, 255, 0.08);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --success: #10b981;
+        --error: #ef4444;
+      }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-        body {
-            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem 1rem;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
-        }
+      body {
+        font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+        background-image:
+          radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+          radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            max-width: 800px;
-        }
+      header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        max-width: 800px;
+      }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #34d399 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
 
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
+      header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
 
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      @media (max-width: 768px) {
         .container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
+      .card {
+        background: var(--bg-card);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
 
-        .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(99, 102, 241, 0.1);
+      }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.1);
-        }
+      .card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.8rem;
+      }
 
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.8rem;
-        }
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
 
-        .badge {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 9999px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+      .badge-publish {
+        background-color: rgba(99, 102, 241, 0.2);
+        color: #a5b4fc;
+      }
 
-        .badge-publish {
-            background-color: rgba(99, 102, 241, 0.2);
-            color: #a5b4fc;
-        }
+      .badge-play {
+        background-color: rgba(52, 211, 153, 0.2);
+        color: #34d399;
+      }
 
-        .badge-play {
-            background-color: rgba(52, 211, 153, 0.2);
-            color: #34d399;
-        }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        background-color: var(--text-muted);
+      }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            background-color: var(--text-muted);
-        }
+      .status-active {
+        background-color: var(--success);
+        box-shadow: 0 0 8px var(--success);
+      }
 
-        .status-active {
-            background-color: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
+      .video-container {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
 
-        .video-container {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+      .video-placeholder {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .video-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
 
-        label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+      input {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        color: var(--text-main);
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+      }
 
-        input {
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.7rem 1rem;
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
 
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+      .btn {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition:
+          background-color 0.2s,
+          transform 0.1s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.8rem 1.5rem;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-        }
+      .btn:hover {
+        background-color: var(--primary-hover);
+      }
 
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
+      .btn:active {
+        transform: scale(0.98);
+      }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+      .btn-stop {
+        background-color: var(--error);
+      }
 
-        .btn-stop {
-            background-color: var(--error);
-        }
+      .btn-stop:hover {
+        background-color: #dc2626;
+      }
 
-        .btn-stop:hover {
-            background-color: #dc2626;
-        }
+      .log-panel {
+        grid-column: 1 / -1;
+        background: var(--bg-card);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        max-height: 300px;
+      }
 
-        .log-panel {
-            grid-column: 1 / -1;
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            max-height: 300px;
-        }
+      .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .log-list {
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        padding: 1rem;
+        height: 180px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
 
-        .log-list {
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 8px;
-            padding: 1rem;
-            height: 180px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 0.85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
+      .log-item {
+        display: flex;
+        gap: 1rem;
+      }
 
-        .log-item {
-            display: flex;
-            gap: 1rem;
-        }
+      .log-time {
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
 
-        .log-time {
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
+      .log-msg {
+        word-break: break-all;
+      }
 
-        .log-msg {
-            word-break: break-all;
-        }
-
-        .log-info { color: #60a5fa; }
-        .log-success { color: #34d399; }
-        .log-warn { color: #fbbf24; }
-        .log-err { color: #f87171; }
+      .log-info {
+        color: #60a5fa;
+      }
+      .log-success {
+        color: #34d399;
+      }
+      .log-warn {
+        color: #fbbf24;
+      }
+      .log-err {
+        color: #f87171;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <header>
-        <h1>HomeGuard-RTC 极速流媒体测试台</h1>
-        <p>Phase 1 - 本地 WebRTC over TCP 推流/拉流核心连通性联调验证</p>
+      <h1>HomeGuard-RTC 极速流媒体测试台</h1>
+      <p>Phase 1 - 本地 WebRTC over TCP 推流/拉流核心连通性联调验证</p>
     </header>
 
     <div class="container">
-        <!-- WHIP 推流控制卡片 -->
-        <div class="card" id="publish-card">
-            <div class="card-title">
-                <span class="status-dot" id="pub-status-dot"></span>
-                <span>WHIP 极简推流端</span>
-                <span class="badge badge-publish">WHIP</span>
-            </div>
-            
-            <div class="video-container">
-                <video id="local-video" autoplay playsinline muted></video>
-                <div class="video-placeholder" id="local-placeholder">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                    <span>无摄像头流，请开启推流</span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="media-source">选择采集源</label>
-                <select id="media-source" style="background-color: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.7rem 1rem; color: var(--text-main); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
-                    <option value="screen" selected>屏幕分享 / 桌面 (Screen Share)</option>
-                    <option value="camera">本地摄像头 + 麦克风 (Camera & Mic)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="publish-url">WHIP API 推流端点</label>
-                <input type="text" id="publish-url" value="http://localhost:1985/rtc/v1/whip/?app=live&stream=camera_home">
-            </div>
-
-            <button class="btn" id="btn-publish" onclick="togglePublish()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-                开始 WHIP 推流
-            </button>
+      <!-- WHIP 推流控制卡片 -->
+      <div class="card" id="publish-card">
+        <div class="card-title">
+          <span class="status-dot" id="pub-status-dot"></span>
+          <span>WHIP 极简推流端</span>
+          <span class="badge badge-publish">WHIP</span>
         </div>
 
-        <!-- WHEP 拉流控制卡片 -->
-        <div class="card" id="play-card">
-            <div class="card-title">
-                <span class="status-dot" id="play-status-dot"></span>
-                <span>WHEP 极简播放器</span>
-                <span class="badge badge-play">WHEP</span>
-            </div>
-
-            <div class="video-container">
-                <video id="remote-video" autoplay playsinline controls></video>
-                <div class="video-placeholder" id="remote-placeholder">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
-                    <span>未在播放</span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="play-url">WHEP API 播放端点</label>
-                <input type="text" id="play-url" value="http://localhost:1985/rtc/v1/whep/?app=live&stream=camera_home">
-            </div>
-
-            <button class="btn" id="btn-play" onclick="togglePlay()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
-                开始 WHEP 播放
-            </button>
+        <div class="video-container">
+          <video id="local-video" autoplay playsinline muted></video>
+          <div class="video-placeholder" id="local-placeholder">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M23 7l-7 5 7 5V7z" />
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            </svg>
+            <span>无摄像头流，请开启推流</span>
+          </div>
         </div>
 
-        <!-- 日志面板 -->
-        <div class="log-panel">
-            <div class="log-header">
-                <h3>系统事件日志</h3>
-                <button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" onclick="clearLogs()">清空</button>
-            </div>
-            <div class="log-list" id="log-list"></div>
+        <div class="form-group">
+          <label for="media-source">选择采集源</label>
+          <select
+            id="media-source"
+            style="
+              background-color: rgba(0, 0, 0, 0.3);
+              border: 1px solid var(--border-color);
+              border-radius: 8px;
+              padding: 0.7rem 1rem;
+              color: var(--text-main);
+              font-family: inherit;
+              font-size: 0.9rem;
+              outline: none;
+              transition: border-color 0.2s;
+              cursor: pointer;
+            "
+          >
+            <option value="screen" selected>屏幕分享 / 桌面 (Screen Share)</option>
+            <option value="camera">本地摄像头 + 麦克风 (Camera & Mic)</option>
+          </select>
         </div>
+
+        <div class="form-group">
+          <label for="publish-url">WHIP API 推流端点</label>
+          <input
+            type="text"
+            id="publish-url"
+            value="http://localhost:1985/rtc/v1/whip/?app=live&stream=camera_home"
+          />
+        </div>
+
+        <button class="btn" id="btn-publish" onclick="togglePublish()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+          </svg>
+          开始 WHIP 推流
+        </button>
+      </div>
+
+      <!-- WHEP 拉流控制卡片 -->
+      <div class="card" id="play-card">
+        <div class="card-title">
+          <span class="status-dot" id="play-status-dot"></span>
+          <span>WHEP 极简播放器</span>
+          <span class="badge badge-play">WHEP</span>
+        </div>
+
+        <div class="video-container">
+          <video id="remote-video" autoplay playsinline controls></video>
+          <div class="video-placeholder" id="remote-placeholder">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M5 3l14 9-14 9V3z" />
+            </svg>
+            <span>未在播放</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="play-url">WHEP API 播放端点</label>
+          <input
+            type="text"
+            id="play-url"
+            value="http://localhost:1985/rtc/v1/whep/?app=live&stream=camera_home"
+          />
+        </div>
+
+        <button class="btn" id="btn-play" onclick="togglePlay()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M5 3l14 9-14 9V3z" />
+          </svg>
+          开始 WHEP 播放
+        </button>
+      </div>
+
+      <!-- 日志面板 -->
+      <div class="log-panel">
+        <div class="log-header">
+          <h3>系统事件日志</h3>
+          <button
+            class="btn"
+            style="padding: 0.3rem 0.8rem; font-size: 0.8rem"
+            onclick="clearLogs()"
+          >
+            清空
+          </button>
+        </div>
+        <div class="log-list" id="log-list"></div>
+      </div>
     </div>
 
     <script>
-        let localStream = null;
-        let publishPeerConnection = null;
-        let isPublishing = false;
+      let localStream = null
+      let publishPeerConnection = null
+      let isPublishing = false
 
-        let playPeerConnection = null;
-        let isPlaying = false;
+      let playPeerConnection = null
+      let isPlaying = false
 
-        function log(msg, type = 'info') {
-            const list = document.getElementById('log-list');
-            const time = new Date().toLocaleTimeString();
-            const item = document.createElement('div');
-            item.className = 'log-item';
-            
-            let typeClass = 'log-info';
-            if (type === 'success') typeClass = 'log-success';
-            if (type === 'warn') typeClass = 'log-warn';
-            if (type === 'error') typeClass = 'log-err';
+      function log(msg, type = 'info') {
+        const list = document.getElementById('log-list')
+        const time = new Date().toLocaleTimeString()
+        const item = document.createElement('div')
+        item.className = 'log-item'
 
-            item.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg ${typeClass}">${msg}</span>`;
-            list.appendChild(item);
-            list.scrollTop = list.scrollHeight;
+        let typeClass = 'log-info'
+        if (type === 'success') typeClass = 'log-success'
+        if (type === 'warn') typeClass = 'log-warn'
+        if (type === 'error') typeClass = 'log-err'
+
+        item.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg ${typeClass}">${msg}</span>`
+        list.appendChild(item)
+        list.scrollTop = list.scrollHeight
+      }
+
+      function clearLogs() {
+        document.getElementById('log-list').innerHTML = ''
+      }
+
+      async function togglePublish() {
+        const btn = document.getElementById('btn-publish')
+        const urlInput = document.getElementById('publish-url')
+        const dot = document.getElementById('pub-status-dot')
+        const placeholder = document.getElementById('local-placeholder')
+
+        if (isPublishing) {
+          // Stop Publishing
+          log('正在停止推流...', 'warn')
+          if (publishPeerConnection) {
+            publishPeerConnection.close()
+            publishPeerConnection = null
+          }
+          if (localStream) {
+            localStream.getTracks().forEach((track) => track.stop())
+            localStream = null
+          }
+          document.getElementById('local-video').srcObject = null
+          placeholder.style.display = 'flex'
+          btn.innerHTML =
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> 开始 WHIP 推流'
+          btn.classList.remove('btn-stop')
+          dot.classList.remove('status-active')
+          isPublishing = false
+          log('推流已停止', 'info')
+          return
         }
 
-        function clearLogs() {
-            document.getElementById('log-list').innerHTML = '';
+        try {
+          const sourceType = document.getElementById('media-source').value
+          if (sourceType === 'screen') {
+            log('请求屏幕分享/桌面获取权限...', 'info')
+            localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+          } else {
+            log('请求本地摄像头与麦克风获取权限...', 'info')
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          }
+          document.getElementById('local-video').srcObject = localStream
+          placeholder.style.display = 'none'
+
+          log('创建 RTCPeerConnection (优先 TCP)...', 'info')
+          publishPeerConnection = new RTCPeerConnection({
+            iceServers: [],
+          })
+
+          // 监听连接状态
+          publishPeerConnection.onconnectionstatechange = () => {
+            log(`推流连接状态变化: ${publishPeerConnection.connectionState}`, 'info')
+            if (publishPeerConnection.connectionState === 'connected') {
+              log('推流连接已成功建立！', 'success')
+              dot.classList.add('status-active')
+            } else if (
+              publishPeerConnection.connectionState === 'failed' ||
+              publishPeerConnection.connectionState === 'disconnected'
+            ) {
+              dot.classList.remove('status-active')
+            }
+          }
+
+          publishPeerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+              log(`推流本地候选者: ${event.candidate.candidate}`, 'info')
+            }
+          }
+
+          // 添加本地轨道
+          localStream.getTracks().forEach((track) => {
+            publishPeerConnection.addTrack(track, localStream)
+          })
+
+          log('生成 SDP Offer...', 'info')
+          const offer = await publishPeerConnection.createOffer()
+          await publishPeerConnection.setLocalDescription(offer)
+
+          // 解析 URL 获取 app 和 stream 名
+          const url = new URL(urlInput.value)
+          const app = url.searchParams.get('app') || 'live'
+          const stream = url.searchParams.get('stream') || 'camera_home'
+          const srsPublishUrl = 'http://localhost:1985/rtc/v1/publish/'
+
+          log(`向 SRS 原生 API 发送推流请求: ${srsPublishUrl}`, 'info')
+          const response = await fetch(srsPublishUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              api: srsPublishUrl,
+              streamurl: `webrtc://localhost/${app}/${stream}`,
+              sdp: offer.sdp,
+            }),
+          })
+
+          if (!response.ok) {
+            throw new Error(`SRS 推流请求失败, 状态码: ${response.status}`)
+          }
+
+          const srsRes = await response.json()
+          if (srsRes.code !== 0) {
+            throw new Error(`SRS 拒绝推流, 错误码: ${srsRes.code}`)
+          }
+
+          const sdpAnswer = srsRes.sdp
+          log('成功接收到 SRS 的 SDP Answer，正在设置 Remote Description...', 'success')
+
+          await publishPeerConnection.setRemoteDescription(
+            new RTCSessionDescription({
+              type: 'answer',
+              sdp: sdpAnswer,
+            }),
+          )
+
+          if (sdpAnswer.includes('tcp') || sdpAnswer.includes('TCP')) {
+            log(
+              '检测到 SRS 返回的 SDP Answer 包含 TCP Candidates！符合 WebRTC over TCP 预期！',
+              'success',
+            )
+          } else {
+            log('警告：SRS 返回的 SDP Answer 未明确包含 TCP Candidate', 'warn')
+          }
+
+          btn.innerHTML =
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg> 停止 WHIP 推流'
+          btn.classList.add('btn-stop')
+          isPublishing = true
+        } catch (err) {
+          log(`推流出错: ${err.message}`, 'error')
+          if (localStream) {
+            localStream.getTracks().forEach((track) => track.stop())
+            localStream = null
+          }
+          placeholder.style.display = 'flex'
+          dot.classList.remove('status-active')
+        }
+      }
+
+      async function togglePlay() {
+        const btn = document.getElementById('btn-play')
+        const urlInput = document.getElementById('play-url')
+        const dot = document.getElementById('play-status-dot')
+        const placeholder = document.getElementById('remote-placeholder')
+
+        if (isPlaying) {
+          log('正在停止播放...', 'warn')
+          if (playPeerConnection) {
+            playPeerConnection.close()
+            playPeerConnection = null
+          }
+          document.getElementById('remote-video').srcObject = null
+          placeholder.style.display = 'flex'
+          btn.innerHTML =
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg> 开始 WHEP 播放'
+          btn.classList.remove('btn-stop')
+          dot.classList.remove('status-active')
+          isPlaying = false
+          log('播放已停止', 'info')
+          return
         }
 
-        async function togglePublish() {
-            const btn = document.getElementById('btn-publish');
-            const urlInput = document.getElementById('publish-url');
-            const dot = document.getElementById('pub-status-dot');
-            const placeholder = document.getElementById('local-placeholder');
+        try {
+          log('创建播放 PeerConnection...', 'info')
+          playPeerConnection = new RTCPeerConnection({
+            iceServers: [],
+          })
 
-            if (isPublishing) {
-                // Stop Publishing
-                log('正在停止推流...', 'warn');
-                if (publishPeerConnection) {
-                    publishPeerConnection.close();
-                    publishPeerConnection = null;
-                }
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                    localStream = null;
-                }
-                document.getElementById('local-video').srcObject = null;
-                placeholder.style.display = 'flex';
-                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> 开始 WHIP 推流';
-                btn.classList.remove('btn-stop');
-                dot.classList.remove('status-active');
-                isPublishing = false;
-                log('推流已停止', 'info');
-                return;
+          const remoteStream = new MediaStream()
+          document.getElementById('remote-video').srcObject = remoteStream
+
+          playPeerConnection.ontrack = (event) => {
+            log('成功接收到 SRS 媒体轨道', 'success')
+            remoteStream.addTrack(event.track)
+            placeholder.style.display = 'none'
+          }
+
+          playPeerConnection.onconnectionstatechange = () => {
+            log(`播放连接状态变化: ${playPeerConnection.connectionState}`, 'info')
+            if (playPeerConnection.connectionState === 'connected') {
+              log('播放连接已成功建立！', 'success')
+              dot.classList.add('status-active')
+            } else if (
+              playPeerConnection.connectionState === 'failed' ||
+              playPeerConnection.connectionState === 'disconnected'
+            ) {
+              dot.classList.remove('status-active')
             }
+          }
 
-            try {
-                const sourceType = document.getElementById('media-source').value;
-                if (sourceType === 'screen') {
-                    log('请求屏幕分享/桌面获取权限...', 'info');
-                    localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-                } else {
-                    log('请求本地摄像头与麦克风获取权限...', 'info');
-                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                }
-                document.getElementById('local-video').srcObject = localStream;
-                placeholder.style.display = 'none';
+          // 强制添加双收发器 (RecvOnly) 以生成 Offer
+          playPeerConnection.addTransceiver('audio', { direction: 'recvonly' })
+          playPeerConnection.addTransceiver('video', { direction: 'recvonly' })
 
-                log('创建 RTCPeerConnection (优先 TCP)...', 'info');
-                publishPeerConnection = new RTCPeerConnection({
-                    iceServers: []
-                });
+          log('生成播放 SDP Offer...', 'info')
+          const offer = await playPeerConnection.createOffer()
+          await playPeerConnection.setLocalDescription(offer)
 
-                // 监听连接状态
-                publishPeerConnection.onconnectionstatechange = () => {
-                    log(`推流连接状态变化: ${publishPeerConnection.connectionState}`, 'info');
-                    if (publishPeerConnection.connectionState === 'connected') {
-                        log('推流连接已成功建立！', 'success');
-                        dot.classList.add('status-active');
-                    } else if (publishPeerConnection.connectionState === 'failed' || publishPeerConnection.connectionState === 'disconnected') {
-                        dot.classList.remove('status-active');
-                    }
-                };
+          // 解析 URL 获取 app 和 stream 名
+          const url = new URL(urlInput.value)
+          const app = url.searchParams.get('app') || 'live'
+          const stream = url.searchParams.get('stream') || 'camera_home'
+          const srsPlayUrl = 'http://localhost:1985/rtc/v1/play/'
 
-                publishPeerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        log(`推流本地候选者: ${event.candidate.candidate}`, 'info');
-                    }
-                };
+          log(`向 SRS 原生 API 发送拉流请求: ${srsPlayUrl}`, 'info')
+          const response = await fetch(srsPlayUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              api: srsPlayUrl,
+              streamurl: `webrtc://localhost/${app}/${stream}`,
+              sdp: offer.sdp,
+            }),
+          })
 
-                // 添加本地轨道
-                localStream.getTracks().forEach(track => {
-                    publishPeerConnection.addTrack(track, localStream);
-                });
+          if (!response.ok) {
+            throw new Error(`SRS 播放请求失败, 状态码: ${response.status}`)
+          }
 
-                log('生成 SDP Offer...', 'info');
-                const offer = await publishPeerConnection.createOffer();
-                await publishPeerConnection.setLocalDescription(offer);
+          const srsRes = await response.json()
+          if (srsRes.code !== 0) {
+            throw new Error(`SRS 拒绝播放, 错误码: ${srsRes.code}`)
+          }
 
-                // 解析 URL 获取 app 和 stream 名
-                const url = new URL(urlInput.value);
-                const app = url.searchParams.get('app') || 'live';
-                const stream = url.searchParams.get('stream') || 'camera_home';
-                const srsPublishUrl = 'http://localhost:1985/rtc/v1/publish/';
+          const sdpAnswer = srsRes.sdp
+          log('成功接收到 SRS 的播放 SDP Answer，正在设置 Remote Description...', 'success')
 
-                log(`向 SRS 原生 API 发送推流请求: ${srsPublishUrl}`, 'info');
-                const response = await fetch(srsPublishUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        api: srsPublishUrl,
-                        streamurl: `webrtc://localhost/${app}/${stream}`,
-                        sdp: offer.sdp
-                    })
-                });
+          await playPeerConnection.setRemoteDescription(
+            new RTCSessionDescription({
+              type: 'answer',
+              sdp: sdpAnswer,
+            }),
+          )
 
-                if (!response.ok) {
-                    throw new Error(`SRS 推流请求失败, 状态码: ${response.status}`);
-                }
+          if (sdpAnswer.includes('tcp') || sdpAnswer.includes('TCP')) {
+            log('检测到 SRS 返回的播放 SDP Answer 包含 TCP Candidates！', 'success')
+          }
 
-                const srsRes = await response.json();
-                if (srsRes.code !== 0) {
-                    throw new Error(`SRS 拒绝推流, 错误码: ${srsRes.code}`);
-                }
-
-                const sdpAnswer = srsRes.sdp;
-                log('成功接收到 SRS 的 SDP Answer，正在设置 Remote Description...', 'success');
-                
-                await publishPeerConnection.setRemoteDescription(new RTCSessionDescription({
-                    type: 'answer',
-                    sdp: sdpAnswer
-                }));
-
-                if (sdpAnswer.includes('tcp') || sdpAnswer.includes('TCP')) {
-                    log('检测到 SRS 返回的 SDP Answer 包含 TCP Candidates！符合 WebRTC over TCP 预期！', 'success');
-                } else {
-                    log('警告：SRS 返回的 SDP Answer 未明确包含 TCP Candidate', 'warn');
-                }
-
-                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg> 停止 WHIP 推流';
-                btn.classList.add('btn-stop');
-                isPublishing = true;
-
-            } catch (err) {
-                log(`推流出错: ${err.message}`, 'error');
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                    localStream = null;
-                }
-                placeholder.style.display = 'flex';
-                dot.classList.remove('status-active');
-            }
+          btn.innerHTML =
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg> 停止 WHEP 播放'
+          btn.classList.add('btn-stop')
+          isPlaying = true
+        } catch (err) {
+          log(`播放出错: ${err.message}`, 'error')
+          placeholder.style.display = 'flex'
+          dot.classList.remove('status-active')
         }
+      }
 
-        async function togglePlay() {
-            const btn = document.getElementById('btn-play');
-            const urlInput = document.getElementById('play-url');
-            const dot = document.getElementById('play-status-dot');
-            const placeholder = document.getElementById('remote-placeholder');
-
-            if (isPlaying) {
-                log('正在停止播放...', 'warn');
-                if (playPeerConnection) {
-                    playPeerConnection.close();
-                    playPeerConnection = null;
-                }
-                document.getElementById('remote-video').srcObject = null;
-                placeholder.style.display = 'flex';
-                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg> 开始 WHEP 播放';
-                btn.classList.remove('btn-stop');
-                dot.classList.remove('status-active');
-                isPlaying = false;
-                log('播放已停止', 'info');
-                return;
-            }
-
-            try {
-                log('创建播放 PeerConnection...', 'info');
-                playPeerConnection = new RTCPeerConnection({
-                    iceServers: []
-                });
-
-                const remoteStream = new MediaStream();
-                document.getElementById('remote-video').srcObject = remoteStream;
-
-                playPeerConnection.ontrack = (event) => {
-                    log('成功接收到 SRS 媒体轨道', 'success');
-                    remoteStream.addTrack(event.track);
-                    placeholder.style.display = 'none';
-                };
-
-                playPeerConnection.onconnectionstatechange = () => {
-                    log(`播放连接状态变化: ${playPeerConnection.connectionState}`, 'info');
-                    if (playPeerConnection.connectionState === 'connected') {
-                        log('播放连接已成功建立！', 'success');
-                        dot.classList.add('status-active');
-                    } else if (playPeerConnection.connectionState === 'failed' || playPeerConnection.connectionState === 'disconnected') {
-                        dot.classList.remove('status-active');
-                    }
-                };
-
-                // 强制添加双收发器 (RecvOnly) 以生成 Offer
-                playPeerConnection.addTransceiver('audio', { direction: 'recvonly' });
-                playPeerConnection.addTransceiver('video', { direction: 'recvonly' });
-
-                log('生成播放 SDP Offer...', 'info');
-                const offer = await playPeerConnection.createOffer();
-                await playPeerConnection.setLocalDescription(offer);
-
-                // 解析 URL 获取 app 和 stream 名
-                const url = new URL(urlInput.value);
-                const app = url.searchParams.get('app') || 'live';
-                const stream = url.searchParams.get('stream') || 'camera_home';
-                const srsPlayUrl = 'http://localhost:1985/rtc/v1/play/';
-
-                log(`向 SRS 原生 API 发送拉流请求: ${srsPlayUrl}`, 'info');
-                const response = await fetch(srsPlayUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        api: srsPlayUrl,
-                        streamurl: `webrtc://localhost/${app}/${stream}`,
-                        sdp: offer.sdp
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`SRS 播放请求失败, 状态码: ${response.status}`);
-                }
-
-                const srsRes = await response.json();
-                if (srsRes.code !== 0) {
-                    throw new Error(`SRS 拒绝播放, 错误码: ${srsRes.code}`);
-                }
-
-                const sdpAnswer = srsRes.sdp;
-                log('成功接收到 SRS 的播放 SDP Answer，正在设置 Remote Description...', 'success');
-
-                await playPeerConnection.setRemoteDescription(new RTCSessionDescription({
-                    type: 'answer',
-                    sdp: sdpAnswer
-                }));
-
-                if (sdpAnswer.includes('tcp') || sdpAnswer.includes('TCP')) {
-                    log('检测到 SRS 返回的播放 SDP Answer 包含 TCP Candidates！', 'success');
-                }
-
-                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg> 停止 WHEP 播放';
-                btn.classList.add('btn-stop');
-                isPlaying = true;
-
-            } catch (err) {
-                log(`播放出错: ${err.message}`, 'error');
-                placeholder.style.display = 'flex';
-                dot.classList.remove('status-active');
-            }
-        }
-
-        // 页面初始化日志
-        log('HomeGuard-RTC Phase 1 调试控制台就绪。请确认 SRS 容器已成功启动并映射了 1985, 8000 端口。', 'success');
+      // 页面初始化日志
+      log(
+        'HomeGuard-RTC Phase 1 调试控制台就绪。请确认 SRS 容器已成功启动并映射了 1985, 8000 端口。',
+        'success',
+      )
     </script>
-</body>
+  </body>
 </html>
