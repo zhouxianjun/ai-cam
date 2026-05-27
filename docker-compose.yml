@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  srs:
+    image: ossrs/srs:6
+    container_name: srs_media_server
+    ports:
+      - "1935:1935"
+      - "1985:1985"
+      - "8080:8080"
+      - "8000:8000"
+    volumes:
+      - ./srs.conf:/usr/local/srs/conf/srs.conf
+    command: ["./objs/srs", "-c", "conf/srs.conf"]
+    restart: always
