@@ -350,7 +350,7 @@
           <input
             type="text"
             id="publish-url"
-            value="http://localhost:1985/rtc/v1/whip/?app=live&stream=camera_home"
+            value="https://media.local.test/rtc/v1/whip/?app=live&stream=camera_home"
           />
         </div>
 
@@ -400,7 +400,7 @@
           <input
             type="text"
             id="play-url"
-            value="http://localhost:1985/rtc/v1/whep/?app=live&stream=camera_home"
+            value="https://media.local.test/rtc/v1/whep/?app=live&stream=camera_home"
           />
         </div>
 
@@ -541,7 +541,7 @@
           const url = new URL(urlInput.value)
           const app = url.searchParams.get('app') || 'live'
           const stream = url.searchParams.get('stream') || 'camera_home'
-          const srsPublishUrl = 'http://localhost:1985/rtc/v1/publish/'
+          const srsPublishUrl = 'https://media.local.test/rtc/v1/publish/'
 
           log(`向 SRS 原生 API 发送推流请求: ${srsPublishUrl}`, 'info')
           const response = await fetch(srsPublishUrl, {
@@ -662,7 +662,7 @@
           const url = new URL(urlInput.value)
           const app = url.searchParams.get('app') || 'live'
           const stream = url.searchParams.get('stream') || 'camera_home'
-          const srsPlayUrl = 'http://localhost:1985/rtc/v1/play/'
+          const srsPlayUrl = 'https://media.local.test/rtc/v1/play/'
 
           log(`向 SRS 原生 API 发送拉流请求: ${srsPlayUrl}`, 'info')
           const response = await fetch(srsPlayUrl, {
