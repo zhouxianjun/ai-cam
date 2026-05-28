@@ -1113,6 +1113,13 @@ C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/ulp/CMakeFil
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/ulp/CMakeFiles/install.dir
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/ulp/CMakeFiles/install/local.dir
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/ulp/CMakeFiles/install/strip.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/__idf_wifi_manager.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/edit_cache.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/rebuild_cache.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/list_install_components.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/install.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/install/local.dir
+C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/CMakeFiles/install/strip.dir
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/espressif__cjson/CMakeFiles/__idf_espressif__cjson.dir
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/espressif__cjson/CMakeFiles/edit_cache.dir
 C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/espressif__cjson/CMakeFiles/rebuild_cache.dir

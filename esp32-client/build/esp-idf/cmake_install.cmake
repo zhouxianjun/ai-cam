@@ -719,6 +719,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/wifi_manager/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/esp-idf/espressif__cjson/cmake_install.cmake")
 endif()
 

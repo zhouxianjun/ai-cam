@@ -205,6 +205,7 @@ $<TARGET_FILE:__idf_esp_driver_sdspi>
 $<TARGET_FILE:idf::perfmon>
 $<TARGET_FILE:idf::rt>
 $<TARGET_FILE:idf::spiffs>
+$<TARGET_FILE:idf::wifi_manager>
 $<TARGET_FILE:idf::espressif__cjson>
 $<TARGET_FILE:idf::espressif__esp_jpeg>
 $<TARGET_FILE:idf::espressif__esp32-camera>
@@ -217,5 +218,6 @@ $<TARGET_FILE:__idf_espressif__esp_libsrtp>
 $<TARGET_FILE:espressif__esp_peer>
 $<TARGET_FILE:__idf_espressif__esp_peer>
 $<TARGET_FILE:idf::main>
+$<TARGET_FILE:__idf_wifi_manager>
 $<TARGET_FILE:__idf_espressif__cjson>
 $<TARGET_FILE:__idf_espressif__esp32-camera>
