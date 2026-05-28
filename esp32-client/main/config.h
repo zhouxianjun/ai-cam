@@ -1,5 +1,5 @@
-#ifndef _APP_CONFIG_H_
-#define _APP_CONFIG_H_
+#ifndef APP_CONFIG_H_
+#define APP_CONFIG_H_
 
 #define WIFI_SSID           "YOUR_WIFI_SSID"
 #define WIFI_PASS           "YOUR_WIFI_PASSWORD"
@@ -37,4 +37,4 @@
 #define SERVO_PAN_PIN      1
 #define SERVO_TILT_PIN     2
 
-#endif
+#endif // APP_CONFIG_H_
