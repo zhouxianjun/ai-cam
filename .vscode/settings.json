@@ -17,5 +17,8 @@
   "cSpell.words": ["oxfmt", "oxlint"],
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features"
-  }
+  },
+  "cmake.sourceDirectory": "C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client",
+  "idf.customExtraVars": {},
+  "idf.currentSetup": "C:\\esp\\.espressif\\v6.0.1\\esp-idf"
 }

@@ -1,5 +1,0 @@
-"-specs=C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client/build/bootloader/specs/picolibc.specs"
--mlongcalls
--fno-builtin-memcpy
--fno-builtin-memset
--fno-builtin-bzero
