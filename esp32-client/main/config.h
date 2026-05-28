@@ -1,8 +1,8 @@
 #ifndef APP_CONFIG_H_
 #define APP_CONFIG_H_
 
-#define WIFI_SSID           "YOUR_WIFI_SSID"
-#define WIFI_PASS           "YOUR_WIFI_PASSWORD"
+#define WIFI_SSID           "LigaAI-CS-Office-2.4G"
+#define WIFI_PASS           "LigaAI8888603"
 #define RETRY_BACKOFF_MAX   30
 
 #define LOCAL_SERVER_IP     "192.168.1.9"
