@@ -1,0 +1,14 @@
+Command: cmake -G Ninja -B C:\Users\Alone\working\ai-cam-new\ai-cam\esp32-client\build -DPYTHON_DEPS_CHECKED=1 -DPYTHON=C:\Espressif\tools\python\v6.0.1\venv\Scripts\python.exe -DESP_PLATFORM=1 -DCCACHE_ENABLE=False C:\Users\Alone\working\ai-cam-new\ai-cam\esp32-client
+CMake Error at C:/esp/.espressif/v6.0.1/esp-idf/tools/cmake/build.cmake:697 (message):
+  ERROR: Error during request
+
+  URL:
+  https://components-file.espressif.cn/components/espressif/esp-protocols.json
+
+  Status code: 403 Forbidden
+
+Call Stack (most recent call first):
+  C:/esp/.espressif/v6.0.1/esp-idf/tools/cmake/project.cmake:773 (idf_build_process)
+  CMakeLists.txt:3 (project)
+
+

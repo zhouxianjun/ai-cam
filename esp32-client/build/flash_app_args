@@ -1,0 +1,2 @@
+--flash-mode dio --flash-freq 80m --flash-size 2MB
+0x10000 homeguard_esp32_client.bin
