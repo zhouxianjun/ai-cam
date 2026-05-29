@@ -20,6 +20,9 @@ services:
   srs:
     image: ossrs/srs:6
     container_name: srs_media_server
+    ports:
+      - "8444:8444"
+      - "8000:8000/udp"
     volumes:
       - ./srs.conf:/usr/local/srs/conf/srs.conf
       - ./nginx/certs:/usr/local/srs/conf/certs:ro

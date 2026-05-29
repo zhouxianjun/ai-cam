@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_websocket_client.h"
 #include "esp_log.h"
 #include "esp_system.h"
@@ -47,6 +49,14 @@ static void ws_event_handler(void *handler_args, esp_event_base_t base, int32_t 
     }
 }
 
+static void control_ws_heartbeat_task(void *arg) {
+    ESP_LOGI(TAG, "WebSocket periodic heartbeat telemetry task active.");
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(20000)); // Send status telemetry report every 20 seconds to keep connection alive
+        app_control_plane_report_status();
+    }
+}
+
 void app_control_plane_connect(void) {
     char ws_uri[256];
     snprintf(ws_uri, sizeof(ws_uri), "wss://%s:%d/control?role=device&deviceId=%s&token=%s",
@@ -68,6 +78,9 @@ void app_control_plane_connect(void) {
     
     // Start long-connection client task (spawns under internal task running on Core 1 by default in ESP-IDF)
     esp_websocket_client_start(ws_client);
+
+    // Create a low priority periodic telemetry heartbeat task on Core 1 to prevent Nginx 60s idle timeouts
+    xTaskCreatePinnedToCore(control_ws_heartbeat_task, "ws_heartbeat", 4096, NULL, 3, NULL, 1);
 }
 
 void app_control_plane_report_status(void) {
