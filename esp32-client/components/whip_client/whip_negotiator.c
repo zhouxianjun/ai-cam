@@ -4,7 +4,9 @@
 #include "esp_log.h"
 #include "cJSON.h"
 #include "whip_client.h"
+#include "esp_crt_bundle.h"
 #include "config.h"
+
 
 static const char *TAG = "WHIP_NEG";
 
@@ -23,7 +25,9 @@ esp_err_t app_whip_fetch_token(char *token_out, size_t max_len) {
         .method = HTTP_METHOD_POST,
         .skip_cert_common_name_check = true, // Bypass SSL for local development
         .transport_type = HTTP_TRANSPORT_OVER_SSL,
+        .crt_bundle_attach = esp_crt_bundle_attach,
     };
+
 
     ESP_LOGI(TAG, "Fetching publish token from: %s", url);
     esp_http_client_handle_t client = esp_http_client_init(&config);
@@ -80,7 +84,9 @@ esp_err_t app_whip_post_sdp(const char *local_offer_sdp, const char *token, char
         .method = HTTP_METHOD_POST,
         .skip_cert_common_name_check = true, // Bypass SSL for local development
         .transport_type = HTTP_TRANSPORT_OVER_SSL,
+        .crt_bundle_attach = esp_crt_bundle_attach,
     };
+
 
     ESP_LOGI(TAG, "Posting WHIP Offer SDP to SRS: %s", whip_url);
     esp_http_client_handle_t client = esp_http_client_init(&config);

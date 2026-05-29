@@ -6,10 +6,13 @@
 #include "control_plane.h"
 #include "config.h"
 
+#include "esp_crt_bundle.h"
+
 static const char *TAG = "CTRL_WS";
 static esp_websocket_client_handle_t ws_client = NULL;
 
 static void ws_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
+
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)event_data;
     switch (event_id) {
         case WEBSOCKET_EVENT_CONNECTED:
@@ -52,8 +55,9 @@ void app_control_plane_connect(void) {
         .uri = ws_uri,
         .network_timeout_ms = 5000,
         .skip_cert_common_name_check = true, // Bypass TLS Certificate for local dev
-        .crt_bundle_attach = NULL
+        .crt_bundle_attach = esp_crt_bundle_attach
     };
+
 
     ESP_LOGI(TAG, "Initiating WebSocket connection to: %s", ws_uri);
     ws_client = esp_websocket_client_init(&config);
