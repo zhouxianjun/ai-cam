@@ -34,5 +34,13 @@ export default defineConfig({
     port: 3000,
     host: true,
     allowedHosts: ['app.local.test', 'media.local.test', 'host.docker.internal'],
+    watch: {
+      ignored: [
+        '**/.data/**',
+        '**/serial_log.txt',
+        '**/serial_log.txt.tmp',
+        '**/nginx/nginx.conf',
+      ],
+    },
   },
 })

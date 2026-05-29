@@ -9,6 +9,7 @@ export interface WSContext extends Record<string, unknown> {
   type: 'client' | 'device'
   userId?: string
   deviceId?: string
+  socketId?: string
 }
 
 interface WSMessagePayload {
@@ -71,7 +72,7 @@ const openHandlers: Record<WSContext['type'], (peer: Peer, context: WSContext) =
         cPeer.send({ type: 'device_status', deviceId, status: 'online' })
       }
     }
-    console.log(`[WS] Device ${deviceId} connected and marked online.`)
+    console.log(`[WS] Device ${deviceId} connected and marked online. (Socket ID: ${context.socketId})`)
   },
   client: async (peer, context) => {
     const userId = context.userId
@@ -154,9 +155,19 @@ const closeHandlers: Record<
       }
     }
   },
-  device: async (_peer, context, details) => {
+  device: async (peer, context, details) => {
     const deviceId = context.deviceId
     if (!deviceId) return
+
+    // Safely ignore stale WebSocket close events from previous connections
+    const currentActivePeer = activeDevices.get(deviceId)
+    if (currentActivePeer && currentActivePeer !== peer) {
+      console.log(
+        `[WS] Stale WebSocket connection for device ${deviceId} (Socket ID: ${context.socketId}) closed. Ignoring.`,
+      )
+      return
+    }
+
     activeDevices.delete(deviceId)
 
     const handleOffline = async () => {
@@ -172,7 +183,9 @@ const closeHandlers: Record<
           cPeer.send({ type: 'device_status', deviceId, status: 'offline' })
         }
       }
-      console.log(`[Grace Period] Device ${deviceId} declared offline.`)
+      console.log(
+        `[Grace Period] Device ${deviceId} declared offline. (Stale Socket ID: ${context.socketId})`,
+      )
     }
 
     // 1000 normal close or client logout -> immediately mark offline
@@ -181,7 +194,7 @@ const closeHandlers: Record<
     } else {
       // Abnormal disconnect: set a 10s network latency/jitter grace period
       console.log(
-        `[Grace Period] Device ${deviceId} disconnected abnormally (code: ${details.code}). Starting 10s grace timer...`,
+        `[Grace Period] Active WebSocket connection for device ${deviceId} (Socket ID: ${context.socketId}) disconnected abnormally (code: ${details.code}). Starting 10s grace timer...`,
       )
       const timer = setTimeout(async () => {
         await handleOffline()
@@ -207,6 +220,9 @@ export const controlWebSocket = {
 
   async open(peer: Peer) {
     const context = peer.context as unknown as WSContext
+    if (context) {
+      context.socketId = Math.random().toString(36).substring(2, 9).toUpperCase()
+    }
     if (context && context.type in openHandlers) {
       await openHandlers[context.type](peer, context)
     }

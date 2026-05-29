@@ -2,6 +2,7 @@ import { defineHandler } from 'nitro'
 import { getRequestIP } from 'nitro/h3'
 import { getDevice, saveDevice } from '../../../utils/db.ts'
 import { CallbackValidationError, validateCallbackIP } from '../../../utils/srs.ts'
+import { activeDevices } from '../../../utils/wsRegistry.ts'
 
 interface SrsStopBody {
   stream?: string
@@ -21,9 +22,16 @@ async function handleStop(body: unknown) {
   if (action === 'on_unpublish' || action === 'on_stop') {
     const device = await getDevice(stream)
     if (device) {
-      device.status = 'offline'
-      device.lastSeen = Date.now()
-      await saveDevice(device)
+      const isWSConnected = activeDevices.has(stream)
+      if (!isWSConnected) {
+        device.status = 'offline'
+        device.lastSeen = Date.now()
+        await saveDevice(device)
+      } else {
+        // Device is still connected via Control WebSocket, just update lastSeen
+        device.lastSeen = Date.now()
+        await saveDevice(device)
+      }
     }
   }
 
