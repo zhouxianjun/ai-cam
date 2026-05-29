@@ -1,4 +1,6 @@
 idf_component_register(SRCS "main.c"
                        INCLUDE_DIRS "."
-                       REQUIRES wifi_manager camera_hal servo_hal nvs_flash)
+                       REQUIRES wifi_manager camera_hal servo_hal nvs_flash control_plane whip_client)
+
+
 
