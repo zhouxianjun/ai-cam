@@ -20,5 +20,6 @@
   },
   "cmake.sourceDirectory": "C:/Users/Alone/working/ai-cam-new/ai-cam/esp32-client",
   "idf.customExtraVars": {},
-  "idf.currentSetup": "C:\\esp\\.espressif\\v6.0.1\\esp-idf"
+  "idf.currentSetup": "C:\\esp\\.espressif\\v6.0.1\\esp-idf",
+  "idf.openOcdConfigs": ["board/esp32s3-builtin.cfg"]
 }
