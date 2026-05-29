@@ -6,7 +6,8 @@
 #include "control_plane.h"
 #include "config.h"
 
-#include "esp_crt_bundle.h"
+#include "root_ca.h"
+
 
 static const char *TAG = "CTRL_WS";
 static esp_websocket_client_handle_t ws_client = NULL;
@@ -54,9 +55,11 @@ void app_control_plane_connect(void) {
     esp_websocket_client_config_t config = {
         .uri = ws_uri,
         .network_timeout_ms = 5000,
-        .skip_cert_common_name_check = true, // Bypass TLS Certificate for local dev
-        .crt_bundle_attach = esp_crt_bundle_attach
+        .skip_cert_common_name_check = true, // Bypass TLS Certificate CN check for local dev
+        .cert_pem = ROOT_CA_PEM,
+        .crt_bundle_attach = NULL
     };
+
 
 
     ESP_LOGI(TAG, "Initiating WebSocket connection to: %s", ws_uri);
