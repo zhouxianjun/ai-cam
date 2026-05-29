@@ -33,6 +33,6 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    allowedHosts: ['app.local.test', 'media.local.test'],
+    allowedHosts: ['app.local.test', 'media.local.test', 'host.docker.internal'],
   },
 })

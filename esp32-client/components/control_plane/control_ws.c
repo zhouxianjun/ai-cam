@@ -55,7 +55,7 @@ void app_control_plane_connect(void) {
     esp_websocket_client_config_t config = {
         .uri = ws_uri,
         .network_timeout_ms = 5000,
-        .skip_cert_common_name_check = true, // Bypass TLS Certificate CN check for local dev
+        .skip_cert_common_name_check = false, // Enable CN check to ensure SNI is sent to Nginx stream mapping!
         .cert_pem = ROOT_CA_PEM,
         .crt_bundle_attach = NULL
     };
