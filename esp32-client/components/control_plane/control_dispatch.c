@@ -10,16 +10,61 @@ static const char *TAG = "CTRL_DISPATCH";
 
 typedef void (*command_handler_t)(const cJSON *payload);
 
+static int s_current_pan = 90;
+static int s_current_tilt = 90;
+
 static void handle_ptz_move(const cJSON *payload) {
     cJSON *pan = cJSON_GetObjectItem(payload, "pan");
     cJSON *tilt = cJSON_GetObjectItem(payload, "tilt");
+    cJSON *direction = cJSON_GetObjectItem(payload, "direction");
+    cJSON *speed_item = cJSON_GetObjectItem(payload, "speed");
+
     if (pan && tilt) {
-        esp_err_t err = app_servo_set_angle(pan->valueint, tilt->valueint);
+        s_current_pan = pan->valueint;
+        s_current_tilt = tilt->valueint;
+        
+        // Bounds checking [0, 180]
+        if (s_current_pan < 0) s_current_pan = 0;
+        if (s_current_pan > 180) s_current_pan = 180;
+        if (s_current_tilt < 0) s_current_tilt = 0;
+        if (s_current_tilt > 180) s_current_tilt = 180;
+
+        ESP_LOGI(TAG, "PTZ absolute move: target Pan=%d, Tilt=%d", s_current_pan, s_current_tilt);
+        esp_err_t err = app_servo_set_angle(s_current_pan, s_current_tilt);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to set servo angle: %s", esp_err_to_name(err));
+        }
+    } else if (direction && direction->valuestring) {
+        int speed = 5;
+        if (speed_item) {
+            speed = speed_item->valueint;
+        }
+
+        if (strcmp(direction->valuestring, "left") == 0) {
+            s_current_pan -= speed;
+        } else if (strcmp(direction->valuestring, "right") == 0) {
+            s_current_pan += speed;
+        } else if (strcmp(direction->valuestring, "up") == 0) {
+            s_current_tilt += speed;
+        } else if (strcmp(direction->valuestring, "down") == 0) {
+            s_current_tilt -= speed;
+        }
+
+        // Bounds checking [0, 180]
+        if (s_current_pan < 0) s_current_pan = 0;
+        if (s_current_pan > 180) s_current_pan = 180;
+        if (s_current_tilt < 0) s_current_tilt = 0;
+        if (s_current_tilt > 180) s_current_tilt = 180;
+
+        ESP_LOGI(TAG, "PTZ relative move: direction=%s, speed=%d -> target Pan=%d, Tilt=%d",
+                 direction->valuestring, speed, s_current_pan, s_current_tilt);
+
+        esp_err_t err = app_servo_set_angle(s_current_pan, s_current_tilt);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "Failed to set servo angle: %s", esp_err_to_name(err));
         }
     } else {
-        ESP_LOGW(TAG, "PTZ command missing pan or tilt properties");
+        ESP_LOGW(TAG, "PTZ command missing pan/tilt or direction properties");
     }
 }
 

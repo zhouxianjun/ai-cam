@@ -242,6 +242,35 @@ describe('WebSocket Signalling Service Route', () => {
       })
     })
 
+    it('should handle client heartbeat message and return pong', async () => {
+      const clientPeer = createMockPeer({ type: 'client', userId: 'user-123' })
+      const message = createMockMessage({
+        action: 'heartbeat',
+      })
+
+      await controlWebSocket.message(clientPeer, message as any)
+
+      expect(clientPeer.send).toHaveBeenCalledTimes(1)
+      expect(clientPeer.send).toHaveBeenCalledWith({
+        type: 'heartbeat',
+        status: 'pong',
+      })
+    })
+
+    it('should return error if client message is missing action or deviceId', async () => {
+      const clientPeer = createMockPeer({ type: 'client', userId: 'user-123' })
+      const message = createMockMessage({
+        action: 'ptz',
+      })
+
+      await controlWebSocket.message(clientPeer, message as any)
+
+      expect(clientPeer.send).toHaveBeenCalledWith({
+        type: 'error',
+        message: 'Missing action or deviceId',
+      })
+    })
+
     it('should forward status report from device to owner clients', async () => {
       const clientPeer = createMockPeer({ type: 'client', userId: 'user-123' })
       await controlWebSocket.open(clientPeer) // register client

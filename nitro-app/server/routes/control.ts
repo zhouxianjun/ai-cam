@@ -97,6 +97,13 @@ const messageHandlers: Record<
     const userId = context.userId
     if (!userId) return
     const { action, deviceId, payload } = data
+
+    // Handle client heartbeat message
+    if (action === 'heartbeat') {
+      peer.send({ type: 'heartbeat', status: 'pong' })
+      return
+    }
+
     if (!action || !deviceId) {
       peer.send({ type: 'error', message: 'Missing action or deviceId' })
       return
