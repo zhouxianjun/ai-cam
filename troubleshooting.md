@@ -70,3 +70,39 @@ This document compiles the technical investigations, root causes, and production
 * **Problem**: Abrupt client power losses do not send standard TCP FIN packets, resulting in "half-open" TCP connections that remain registered in Nginx and the Node server for hours.
 * **Root Cause**: The OS default TCP keepalive check interval is 2 hours, keeping dead half-open connections alive and causing state collision and registration lag when the device reboots.
 * **Solution**: Configured the socket options `so_keepalive=30s:10s:3` on port `443` in the Nginx L4 Stream Router. Nginx now actively probes idle sockets and cleanly tears down dead connections in exactly 60 seconds (30s idle + 3 probes $\times$ 10s), ensuring robust offline detection and zero lingering stale sockets!
+
+---
+
+## 10. Concurrent TLS Heap Exhaustion (mbedTLS PSRAM Migration)
+* **Problem**: Concurrent WSS (control WebSocket), HTTPS (SDP negotiation/WHIP client), and DTLS (WebRTC handshake) connections caused severe heap exhaustion (`ESP_ERR_HTTP_FETCH_HEADER` or out-of-memory crashes) on the ESP32.
+* **Root Cause**: By default, mbedTLS allocated session buffers in the precious internal DRAM. With multiple concurrent TLS connections, the DRAM heap was quickly depleted.
+* **Solution**: Enabled `CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC=y` and `CONFIG_MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH=y` in `sdkconfig.defaults`, migrating mbedTLS allocation to external PSRAM. This stably freed up DRAM and resolved all TLS heap exhaustion panics.
+
+---
+
+## 11. WebRTC Core Panics, Thread Safety & Task Stack Size
+* **Problem**: A Guru Meditation Error (IllegalInstruction or StoreProhibited, `EXCCAUSE 0x0`) occurred during WebRTC peer state stabilization.
+* **Root Cause**: Stack overflows and race conditions in `libpeer`'s ICE polling/streaming. The stack allocated for `whip_pc_task` was too small (16KB) for concurrent DTLS handshakes, which are highly cryptographic and stack-heavy. Additionally, running ICE polling and streaming on separate, thread-unsafe tasks caused memory races.
+* **Solution**: Raised the stack size of `whip_pc_task` to 32KB (`32768`) and unified the ICE polling and streaming into a single thread-safe Core 1 task, pin-checking memory access. This cleanly avoided stack corruption and core panics during peer connection state changes.
+
+---
+
+## 12. WebRTC SDP Data Channel Crash & SDP Alignment
+* **Problem**: WebRTC negotiation failed or crashed after handshakes because of SDP configuration differences.
+* **Root Cause**: Enabling SCTP data channels (`.enable_data_channel = true` in libpeer) while manually stripping `m=application` lines from the SDP Offer to appease SRS caused a fatal crash. During the DTLS handshake completion, `libpeer` attempted to initiate SCTP associations on a data channel that was never negotiated in the SDP, leading to null pointer dereferences and crash `EXCCAUSE 0x0`.
+* **Solution**: Disabled SCTP data channels completely (`.enable_data_channel = false` in `esp_peer` / `whip_client` configuration). Cleanly aligned the video codec configuration to H.264, generating standard-compliant video-only SDP Offers accepted naturally by SRS, eliminating the need for fragile manual SDP string manipulation.
+
+---
+
+## 13. DMA Network Buffer Coherence (LwIP DRAM Restriction)
+* **Problem**: Attempting to allocate WiFi or LwIP buffers in SPIRAM (PSRAM) on the ESP32-S3 to save DRAM led to heavy packet loss and DMA incoherence.
+* **Root Cause**: WiFi/LwIP network buffers require DMA access, which is highly restricted or slow on external SPIRAM, leading to memory incoherence and corrupted network packets.
+* **Solution**: Kept LwIP buffers strictly in fast internal DRAM while migrating user-space tasks, mbedTLS, and camera frame buffers to SPIRAM (PSRAM), maintaining high network throughput and stable DMA transfers.
+
+---
+
+## 14. PSRAM Camera Frame Buffer Direct Reference
+* **Problem**: Storing DRAM frame buffers for video packetization caused memory leaks and duplicate allocations.
+* **Root Cause**: Using static DRAM buffers or continuous `heap_caps_realloc` for copying frames from PSRAM camera buffer to internal SRAM was extremely memory-wasteful and triggered DRAM fragmentation.
+* **Solution**: Configured camera frame buffers directly in PSRAM (`.fb_location = CAMERA_FB_IN_PSRAM`), removed custom DRAM frame buffers and cache synchronization routines (`esp_cache_msync`), and refactored `whip_streamer.c` to directly reference camera frame buffer pointers (`fb->buf`), passing them directly to `esp_peer_send_video()`, and immediately returning the buffer (`esp_camera_fb_return(fb)`) inside the loop, preventing DRAM overhead.
+

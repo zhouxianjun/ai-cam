@@ -26,6 +26,8 @@ services:
     volumes:
       - ./srs.conf:/usr/local/srs/conf/srs.conf
       - ./nginx/certs:/usr/local/srs/conf/certs:ro
+      # Persistence for DVR recordings. You can change './dvr_records' to your desired local Windows directory.
+      - ./dvr_records:/usr/local/srs/objs/nginx/html/objs/dvr
     command: ["./objs/srs", "-c", "conf/srs.conf"]
     restart: always
     extra_hosts:

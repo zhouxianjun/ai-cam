@@ -14,3 +14,4 @@ typed-router.d.ts
 .DS_Store
 esp32-client/managed_components
 esp32-client/build
+dvr_records
