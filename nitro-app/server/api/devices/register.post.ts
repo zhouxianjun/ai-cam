@@ -64,5 +64,6 @@ export default defineHandler(async (event) => {
   }
 
   await saveDevice(device)
+  console.log('Device registered successfully: ', deviceId)
   return { success: true }
 })

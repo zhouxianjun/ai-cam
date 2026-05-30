@@ -37,23 +37,44 @@ export function useWhep(videoElement: Ref<HTMLVideoElement | null>) {
       const { token } = (await tokenRes.json()) as { token: string }
       const whepUrl = `https://media.local.test/rtc/v1/whep/?app=live&stream=${deviceId}&token=${token}`
 
-      // 2. Initialize PeerConnection
+      // 2. Initialize PeerConnection (ESP32 only streams video, so we only request video to prevent SDP m-line mismatch)
       pc = new RTCPeerConnection()
       pc.addTransceiver('video', { direction: 'recvonly' })
-      pc.addTransceiver('audio', { direction: 'recvonly' })
 
       pc.ontrack = (event) => {
-        if (videoElement.value && event.streams[0]) {
-          videoElement.value.srcObject = event.streams[0]
+        console.log('[WHEP] Track received:', event.track.kind, 'Streams:', event.streams.length)
+        if (videoElement.value) {
+          if (event.streams && event.streams[0]) {
+            videoElement.value.srcObject = event.streams[0]
+            console.log('[WHEP] Bound stream directly to video element')
+          } else {
+            console.log('[WHEP] No stream in ontrack, using track fallback')
+            if (!videoElement.value.srcObject) {
+              videoElement.value.srcObject = new MediaStream()
+            }
+            ;(videoElement.value.srcObject as MediaStream).addTrack(event.track)
+            console.log('[WHEP] Added track to fallback MediaStream')
+          }
           status.value = 'playing'
           startStatsQuery()
         }
       }
 
       pc.oniceconnectionstatechange = () => {
-        if (pc?.iceConnectionState === 'failed') {
+        const state = pc?.iceConnectionState
+        console.log('[WHEP] ICE Connection State changed to:', state)
+        if (state === 'failed') {
           status.value = 'error'
           errorMsg.value = 'ICE Negotiation failed'
+        }
+      }
+
+      pc.onconnectionstatechange = () => {
+        const state = pc?.connectionState
+        console.log('[WHEP] Peer Connection State changed to:', state)
+        if (state === 'failed') {
+          status.value = 'error'
+          errorMsg.value = 'WebRTC Connection failed'
         }
       }
 

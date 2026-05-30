@@ -64,6 +64,6 @@ export default defineHandler(async (event) => {
     },
     device.secret,
   )
-
+  console.log('Device publish token generated: ', deviceId)
   return { token }
 })
