@@ -8,7 +8,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['server/tests/**/*.test.ts', 'server/**/*.spec.ts'],
+    include: ['server/tests/**/*.test.ts', 'server/**/*.spec.ts', 'app/stores/**/*.spec.ts'],
     fileParallelism: false,
   },
 })

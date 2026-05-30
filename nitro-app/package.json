@@ -4,6 +4,7 @@
     "build": "vite build",
     "dev": "vite dev",
     "preview": "vite preview",
+    "test": "vitest run",
     "typecheck": "pnpm run /^typecheck:/",
     "typecheck:server": "tsgo --noEmit --project tsconfig.server.json",
     "typecheck:app": "vue-tsc --noEmit --project tsconfig.app.json",
