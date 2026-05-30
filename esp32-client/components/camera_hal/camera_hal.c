@@ -32,9 +32,9 @@ esp_err_t app_camera_init(void) {
         .pixel_format = PIXFORMAT_JPEG,
         .frame_size = CAM_FRAME_SIZE,
         .jpeg_quality = CAM_JPEG_QUALITY,
-        .fb_count = 2,
+        .fb_count = 3,
         .grab_mode = CAMERA_GRAB_LATEST,
-        .fb_location = CAMERA_FB_IN_PSRAM,
+        .fb_location = CAMERA_FB_IN_DRAM,
     };
 
     esp_err_t err = esp_camera_init(&config);
@@ -42,6 +42,6 @@ esp_err_t app_camera_init(void) {
         ESP_LOGE(TAG, "Camera initialization failed: %s", esp_err_to_name(err));
         return err;
     }
-    ESP_LOGI(TAG, "Camera initialized successfully in PSRAM.");
+    ESP_LOGI(TAG, "Camera initialized successfully (frame buffers in DRAM).");
     return ESP_OK;
 }

@@ -70,6 +70,6 @@ direct_dependencies:
 - espressif/esp32-camera
 - espressif/esp_peer
 - espressif/esp_websocket_client
-manifest_hash: 1625a40bc438665ca78dd88ae7b1fa23f1fbce0bed150a5773ee76ef4645b684
+manifest_hash: 9c9a5543146a9ccbe3898fc73a99b02117e227d75052dbf4b4d6f2d94b2d2406
 target: esp32s3
 version: 3.0.0

@@ -30,9 +30,9 @@
 #define CAM_HREF_GPIO       7
 #define CAM_PCLK_GPIO      13
 
-#define CAM_XCLK_FREQ      20000000
+#define CAM_XCLK_FREQ      8000000
 #define CAM_FRAME_SIZE     FRAMESIZE_QVGA
-#define CAM_JPEG_QUALITY   12
+#define CAM_JPEG_QUALITY   20
 
 #define SERVO_PAN_PIN      1
 #define SERVO_TILT_PIN     2
