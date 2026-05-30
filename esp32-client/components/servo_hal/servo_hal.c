@@ -33,7 +33,7 @@ esp_err_t app_servo_init(void) {
         .timer_num        = LEDC_TIMER,
         .duty_resolution  = LEDC_RESOLUTION,
         .freq_hz          = LEDC_FREQ_HZ,
-        .clk_cfg          = LEDC_AUTO_CLK,
+        .clk_cfg          = LEDC_USE_APB_CLK,
     };
     esp_err_t err = ledc_timer_config(&ledc_timer);
     if (err != ESP_OK) {
@@ -111,6 +111,6 @@ esp_err_t app_servo_set_angle(int pan_angle, int tilt_angle) {
     }
 
     xSemaphoreGive(s_servo_mutex);
-    ESP_LOGD(TAG, "Servo rotated: Pan: %d, Tilt: %d", pan_angle, tilt_angle);
+    ESP_LOGI(TAG, "Servo rotated: Pan: %d, Tilt: %d", pan_angle, tilt_angle);
     return ESP_OK;
 }
