@@ -30,6 +30,10 @@ import publishTokenHandler from './devices/publish-token.post.ts'
 import playTokenHandler from './devices/play-token.post.ts'
 
 describe('API Endpoints Unit Tests (H3 Mocking)', () => {
+  const createMockHeaders = (headers: Record<string, string>) => ({
+    get: (name: string) => headers[name.toLowerCase()] ?? null,
+  })
+
   const testUser = {
     id: 'admin_user',
     username: 'admin',
@@ -235,9 +239,9 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
 
       const event = {
         req: {
-          headers: {
+          headers: createMockHeaders({
             authorization: `Bearer ${userToken}`,
-          },
+          }),
         },
       } as any
 
@@ -250,7 +254,7 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
     it('should fail list devices if unauthorized', async () => {
       const event = {
         req: {
-          headers: {},
+          headers: createMockHeaders({}),
         },
       } as any
 
@@ -260,9 +264,9 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
     it('should fail list devices with invalid token', async () => {
       const event = {
         req: {
-          headers: {
+          headers: createMockHeaders({
             authorization: 'Bearer invalid_token_xyz',
-          },
+          }),
         },
       } as any
 
@@ -370,9 +374,9 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
     it('should sign play token successfully for owned device', async () => {
       const event = {
         req: {
-          headers: {
+          headers: createMockHeaders({
             authorization: `Bearer ${userToken}`,
-          },
+          }),
           json: async () => ({
             deviceId: 'cam_001',
             app: 'live',
@@ -395,7 +399,7 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
     it('should fail if user is not authorized', async () => {
       const event = {
         req: {
-          headers: {},
+          headers: createMockHeaders({}),
           json: async () => ({
             deviceId: 'cam_001',
             app: 'live',
@@ -420,9 +424,9 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
 
       const event = {
         req: {
-          headers: {
+          headers: createMockHeaders({
             authorization: `Bearer ${userToken}`,
-          },
+          }),
           json: async () => ({
             deviceId: 'cam_002',
             app: 'live',
@@ -437,9 +441,9 @@ describe('API Endpoints Unit Tests (H3 Mocking)', () => {
     it('should fail if parameters are missing', async () => {
       const event = {
         req: {
-          headers: {
+          headers: createMockHeaders({
             authorization: `Bearer ${userToken}`,
-          },
+          }),
           json: async () => ({
             deviceId: 'cam_001',
           }),

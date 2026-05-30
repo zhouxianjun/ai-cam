@@ -53,14 +53,14 @@ nitro-app/
 ```typescript
 // ✅ 映射表
 const handlers: Record<string, (p: Payload) => Result> = {
-  'device:register': handleRegister,
-  'device:heartbeat': handleHeartbeat,
-}
-const fn = handlers[msg.type]
+  "device:register": handleRegister,
+  "device:heartbeat": handleHeartbeat,
+};
+const fn = handlers[msg.type];
 
 // ❌ if-return 链
-if (msg.type === 'device:register') return handleRegister(msg)
-if (msg.type === 'device:heartbeat') return handleHeartbeat(msg)
+if (msg.type === "device:register") return handleRegister(msg);
+if (msg.type === "device:heartbeat") return handleHeartbeat(msg);
 ```
 
 - **优先使用第三方工具函数** — `es-toolkit` 已安装，通用工具函数（数组/对象/函数式）优先用它，不要手写
@@ -74,22 +74,24 @@ if (msg.type === 'device:heartbeat') return handleHeartbeat(msg)
 
 ```typescript
 // 定义处理器 / WebSocket / 插件
-import { defineHandler, defineWebSocketHandler } from 'nitro'
-import { definePlugin } from 'nitro'
+import { defineHandler, defineWebSocketHandler } from "nitro";
+import { definePlugin } from "nitro";
 
 // 运行时配置 & 存储
-import { useRuntimeConfig } from 'nitro/runtime-config'
-import { useStorage } from 'nitro/storage'
+import { useRuntimeConfig } from "nitro/runtime-config";
+import { useStorage } from "nitro/storage";
 
 // h3 工具与安全
-import { HTTPError, getRequestIP, createEventStream } from 'nitro/h3'
+import { HTTPError, getRequestIP, createEventStream } from "nitro/h3";
 
 // 读请求体 / 路由参数
-const body = await event.req.json()
-const { id } = event.context.params
+const body = await event.req.json();
+const { id } = event.context.params;
 ```
 
 > ⚠️ **Nitro v3 重要弃用避坑指南**：
+
 > 1. `readBody(event)` 已废弃。改用 `await event.req.json()` 提取数据体。
 > 2. `createError` 已经废弃。请统一改用标准的 `throw new HTTPError({ status: 400, message: '...' })`。
 > 3. `event.node` / `event.node.req.socket.remoteAddress` 已经废弃。获取客户端 IP 严禁读取平台专有 socket，请统一改用原生跨平台的 `getRequestIP(event)`。此方法不仅能免去弃用警告，且天然完美兼容 Node、Deno、Bun 和多种 Serverless 平台。
+> 4. `event.req.headers` 类型是安全的，不要强转，获取header使用 `event.req.headers.get('authorization')`。

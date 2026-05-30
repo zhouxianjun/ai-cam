@@ -1,37 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useAuthStore } from '~/app/stores/auth.ts'
 import { useDeviceStore } from '~/app/stores/device.ts'
-import { useAsyncState } from '@vueuse/core'
 import DeviceList from '~/app/components/DeviceList.vue'
 import VideoPlayer from '~/app/components/VideoPlayer.vue'
 import PtzConsole from '~/app/components/PtzConsole.vue'
-import type { Device } from '~/shared/types.ts'
 
 const authStore = useAuthStore()
 const deviceStore = useDeviceStore()
-
-// Use stateful async fetch helper
-const {
-  state: devicesList,
-  isLoading,
-  error,
-  execute,
-} = useAsyncState<Device[]>(async () => {
-  const res = await fetch('/api/devices', {
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-    },
-  })
-  if (!res.ok) throw new Error('Failed to load devices list')
-  const data = (await res.json()) as { devices: Device[] }
-  deviceStore.setDevices(data.devices)
-  return data.devices
-}, [])
-
-onMounted(() => {
-  execute()
-})
 
 function handleLogout() {
   authStore.logout()
@@ -87,7 +62,7 @@ function handleLogout() {
       <!-- Left Devices Sidebar -->
       <aside class="w-80 h-full flex-shrink-0">
         <div
-          v-if="isLoading"
+          v-if="deviceStore.isLoading"
           class="flex h-full items-center justify-center text-slate-500 font-mono text-xs uppercase tracking-widest bg-[#10172a]/65 border-r border-cyan-500/10"
         >
           <span
@@ -96,12 +71,12 @@ function handleLogout() {
           加载拓扑集群...
         </div>
         <div
-          v-else-if="error"
+          v-else-if="deviceStore.error"
           class="flex flex-col h-full items-center justify-center p-6 text-center bg-[#10172a]/65 border-r border-cyan-500/10 text-orange-400 space-y-4"
         >
           <span class="text-xs uppercase tracking-widest font-bold">拓扑数据加载失败</span>
           <button
-            @click="execute()"
+            @click="deviceStore.loadDevices()"
             class="px-4 py-2 rounded border border-orange-500/20 bg-orange-950/10 text-xs font-bold tracking-widest uppercase hover:bg-orange-950/20 active:scale-95 transition-all cursor-pointer"
           >
             重试加载

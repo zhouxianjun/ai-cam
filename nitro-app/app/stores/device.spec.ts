@@ -22,7 +22,7 @@ describe('Device Store', () => {
 
   it('should set devices and handle selection', () => {
     const store = useDeviceStore()
-    store.setDevices(mockDevices)
+    store.devices = mockDevices
     expect(store.devices).toHaveLength(1)
 
     store.selectedDeviceId = 'cam1'
@@ -31,7 +31,7 @@ describe('Device Store', () => {
 
   it('should update device status and lastSeen reactively', () => {
     const store = useDeviceStore()
-    store.setDevices(mockDevices)
+    store.devices = mockDevices
 
     const beforeTime = Date.now()
     store.updateDeviceStatus('cam1', 'online')

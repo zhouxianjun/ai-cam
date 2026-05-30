@@ -1,3 +1,5 @@
+import { HTTPError, type H3Event } from 'nitro'
+import { type EventHandlerRequest } from 'nitro/h3'
 import crypto from 'node:crypto'
 import type { MediaTokenClaims } from '~/shared/types.ts'
 
@@ -28,7 +30,8 @@ export function verifyJWT(token: string): { userId: string; role: string } | nul
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
     if (payload.exp < Math.floor(Date.now() / 1000)) return null
     return payload
-  } catch {
+  } catch (e) {
+    console.error('JWT Verification failed:', e)
     return null
   }
 }
@@ -54,4 +57,21 @@ export function verifyMediaToken(tokenString: string, secret: string): MediaToke
   } catch {
     return null
   }
+}
+
+export const requireAuth = (event: H3Event<EventHandlerRequest>) => {
+  const headers = event.req.headers
+  const authHeader = headers.get('authorization')
+
+  if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    throw new HTTPError({ status: 401, message: 'Unauthorized' })
+  }
+
+  const token = authHeader.substring(7)
+  const userClaims = verifyJWT(token)
+  if (!userClaims) {
+    throw new HTTPError({ status: 401, message: 'Unauthorized' })
+  }
+
+  return userClaims
 }

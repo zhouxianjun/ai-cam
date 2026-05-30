@@ -1,22 +1,9 @@
 import { defineHandler } from 'nitro'
-import { HTTPError } from 'nitro/h3'
 import { listDevicesByOwner } from '../../utils/db.ts'
-import { verifyJWT } from '../../utils/token.ts'
+import { requireAuth } from '../../utils/token.ts'
 
 export default defineHandler(async (event) => {
-  const headers = event.req.headers as unknown as Record<string, unknown>
-  const authHeader = headers.authorization
-
-  if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
-    throw new HTTPError({ status: 401, message: 'Unauthorized' })
-  }
-
-  const token = authHeader.substring(7)
-  const userClaims = verifyJWT(token)
-  if (!userClaims) {
-    throw new HTTPError({ status: 401, message: 'Unauthorized' })
-  }
-
+  const userClaims = requireAuth(event)
   const devices = await listDevicesByOwner(userClaims.userId)
   return { devices }
 })

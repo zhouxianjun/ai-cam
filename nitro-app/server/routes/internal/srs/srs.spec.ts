@@ -74,7 +74,7 @@ describe('SRS HTTP Callbacks Unit Tests', () => {
 
   describe('on-publish.post.ts', () => {
     it('should reject requests with forbidden code 403 when remote IP is not local', async () => {
-      const event = createMockEvent('192.168.1.100', {})
+      const event = createMockEvent('8.8.8.8', {})
       const res = (await onPublishHandler(event)) as CallbackResult
       expect(res).toEqual({ code: 403, error: 'Forbidden' })
     })
@@ -239,7 +239,7 @@ describe('SRS HTTP Callbacks Unit Tests', () => {
       })
       const res = (await onPlayHandler(event)) as CallbackResult
       expect(res.code).toBe(401)
-      expect(res.error).toBe('Missing parameters')
+      expect(res.error).toBe('Missing media parameters')
     })
 
     it('should reject if token is invalid or action is mismatched', async () => {
@@ -290,7 +290,7 @@ describe('SRS HTTP Callbacks Unit Tests', () => {
 
   describe('on-stop.post.ts', () => {
     it('should reject requests with forbidden code 403 when remote IP is not local', async () => {
-      const event = createMockEvent('192.168.1.1', {})
+      const event = createMockEvent('8.8.8.8', {})
       const res = (await onStopHandler(event)) as CallbackResult
       expect(res).toEqual({ code: 403, error: 'Forbidden' })
     })

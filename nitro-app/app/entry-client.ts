@@ -14,15 +14,15 @@ const router = createRouter({
 })
 
 // Global Access ACL Route Guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const authStore = useAuthStore()
   if (to.path !== '/login' && !authStore.isAuthenticated) {
-    next('/login')
-  } else if (to.path === '/login' && authStore.isAuthenticated) {
-    next('/')
-  } else {
-    next()
+    return '/login'
   }
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    return '/'
+  }
+  return true
 })
 
 app.use(router)

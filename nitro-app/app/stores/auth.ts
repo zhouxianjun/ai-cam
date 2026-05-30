@@ -30,6 +30,9 @@ export const useAuthStore = defineStore('auth', () => {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('auth_token')
     }
+    if (typeof window !== 'undefined') {
+      window.location.reload()
+    }
   }
 
   return {

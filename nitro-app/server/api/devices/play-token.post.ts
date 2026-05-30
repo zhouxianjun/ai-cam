@@ -2,7 +2,7 @@ import { defineHandler } from 'nitro'
 import { HTTPError } from 'nitro/h3'
 import crypto from 'node:crypto'
 import { getDevice } from '../../utils/db.ts'
-import { verifyJWT, signMediaToken } from '../../utils/token.ts'
+import { signMediaToken, requireAuth } from '../../utils/token.ts'
 
 interface PlayTokenPayload {
   deviceId: string
@@ -39,17 +39,7 @@ function validatePlayTokenPayload(body: unknown): PlayTokenPayload {
 }
 
 export default defineHandler(async (event) => {
-  const headers = event.req.headers as unknown as Record<string, unknown>
-  const authHeader = headers.authorization
-  if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
-    throw new HTTPError({ status: 401, message: 'Unauthorized' })
-  }
-
-  const userToken = authHeader.substring(7)
-  const userClaims = verifyJWT(userToken)
-  if (!userClaims) {
-    throw new HTTPError({ status: 401, message: 'Unauthorized' })
-  }
+  const userClaims = requireAuth(event)
 
   const body = await event.req.json()
   const { deviceId, app, stream } = validatePlayTokenPayload(body)
