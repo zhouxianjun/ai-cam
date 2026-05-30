@@ -5,16 +5,22 @@ import { useAuthStore } from './auth.ts'
 describe('Auth Store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    
+
     const storeMap = new Map<string, string>()
     const localStorageMock = {
       getItem: vi.fn((key: string) => storeMap.get(key) || null),
-      setItem: vi.fn((key: string, value: string) => { storeMap.set(key, String(value)) }),
-      removeItem: vi.fn((key: string) => { storeMap.delete(key) }),
-      clear: vi.fn(() => { storeMap.clear() })
+      setItem: vi.fn((key: string, value: string) => {
+        storeMap.set(key, String(value))
+      }),
+      removeItem: vi.fn((key: string) => {
+        storeMap.delete(key)
+      }),
+      clear: vi.fn(() => {
+        storeMap.clear()
+      }),
     }
     vi.stubGlobal('localStorage', localStorageMock)
-    
+
     localStorage.clear()
     vi.stubGlobal('fetch', vi.fn())
   })
@@ -28,7 +34,7 @@ describe('Auth Store', () => {
   it('should store token and authenticate on successful login', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ token: 'mock-jwt-token' })
+      json: async () => ({ token: 'mock-jwt-token' }),
     })
     vi.stubGlobal('fetch', mockFetch)
 

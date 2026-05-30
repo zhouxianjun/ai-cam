@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(
-    typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null
+    typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null,
   )
   const isAuthenticated = computed(() => !!token.value)
 
@@ -11,14 +11,14 @@ export const useAuthStore = defineStore('auth', () => {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password }),
     })
 
     if (!response.ok) {
       throw new Error('Authentication failed')
     }
 
-    const data = await response.json() as { token: string }
+    const data = (await response.json()) as { token: string }
     token.value = data.token
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('auth_token', data.token)
@@ -36,6 +36,6 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     isAuthenticated,
     login,
-    logout
+    logout,
   }
 })

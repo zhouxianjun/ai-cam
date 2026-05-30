@@ -6,8 +6,8 @@ export const useDeviceStore = defineStore('device', () => {
   const devices = ref<Device[]>([])
   const selectedDeviceId = ref<string | null>(null)
 
-  const selectedDevice = computed(() => 
-    devices.value.find(d => d.id === selectedDeviceId.value) || null
+  const selectedDevice = computed(
+    () => devices.value.find((d) => d.id === selectedDeviceId.value) || null,
   )
 
   function setDevices(list: Device[]): void {
@@ -15,7 +15,7 @@ export const useDeviceStore = defineStore('device', () => {
   }
 
   function updateDeviceStatus(deviceId: string, status: 'online' | 'offline'): void {
-    const device = devices.value.find(d => d.id === deviceId)
+    const device = devices.value.find((d) => d.id === deviceId)
     if (device) {
       device.status = status
       device.lastSeen = Date.now()
@@ -27,6 +27,6 @@ export const useDeviceStore = defineStore('device', () => {
     selectedDeviceId,
     selectedDevice,
     setDevices,
-    updateDeviceStatus
+    updateDeviceStatus,
   }
 })

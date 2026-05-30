@@ -11,8 +11,8 @@ const mockDevices: Device[] = [
     status: 'offline',
     lastSeen: 1000,
     ownerId: 'admin_user',
-    createdAt: 500
-  }
+    createdAt: 500,
+  },
 ]
 
 describe('Device Store', () => {
@@ -32,7 +32,7 @@ describe('Device Store', () => {
   it('should update device status and lastSeen reactively', () => {
     const store = useDeviceStore()
     store.setDevices(mockDevices)
-    
+
     const beforeTime = Date.now()
     store.updateDeviceStatus('cam1', 'online')
 

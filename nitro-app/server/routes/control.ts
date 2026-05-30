@@ -72,7 +72,9 @@ const openHandlers: Record<WSContext['type'], (peer: Peer, context: WSContext) =
         cPeer.send({ type: 'device_status', deviceId, status: 'online' })
       }
     }
-    console.log(`[WS] Device ${deviceId} connected and marked online. (Socket ID: ${context.socketId})`)
+    console.log(
+      `[WS] Device ${deviceId} connected and marked online. (Socket ID: ${context.socketId})`,
+    )
   },
   client: async (peer, context) => {
     const userId = context.userId
